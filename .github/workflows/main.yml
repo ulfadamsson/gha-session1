@@ -30,6 +30,9 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
 
+      - name: "Set version with Maven"
+        run: mvn -ntp versions:set -DnewVersion=${{ steps.semver.outputs.version }}
+
       - name: "Build with Maven"
         run: mvn -ntp clean package
 
@@ -38,6 +41,7 @@ jobs:
         with:
           tags: ${{ github.action_repository }}:${{ steps.semver.outputs.version }}
           context: ${{ github.workspace }}
+          build-args: SEMVER_NEW_VERSION=${{ steps.semver.outputs.version }}
 
       - name: "Create release"
         if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
