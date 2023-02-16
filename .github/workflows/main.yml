@@ -10,6 +10,16 @@ jobs:
     steps:
       - name: "Checkout codebase"
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: "SemVer"
+        id: semver
+        uses: zwaldowski/semver-release-action@v3
+        with:
+          bump: "patch"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          dry_run: true
 
       - name: "Set up JDK 17"
         uses: actions/setup-java@v3
@@ -23,5 +33,5 @@ jobs:
       - name: "Build docker image"
         uses: docker/build-push-action@v4
         with:
-          tags: ${{ github.action_repository }}:latest
+          tags: ${{ github.action_repository }}:${{ steps.semver.outputs.version }}
           context: ${{ github.workspace }}
